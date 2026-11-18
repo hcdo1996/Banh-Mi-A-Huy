@@ -27,7 +27,7 @@ const CHARS={
  su_genz:{name:'Bé Su',faces:{front:'front',happy:'happy',angry:'bored',shocked:'shocked',eating:'eating'},voice:'su_genz'},
  shipper:{name:'Anh Long Shipper',faces:{front:'front',happy:'happy',angry:'stressed',shocked:'shocked',eating:'eating'},voice:'shipper'},
  co_dieu:{name:'Cô Diệu',faces:{front:'front',happy:'happy',angry:'impatient',shocked:'horrified',eating:'eating'},voice:'co_dieu'},
- ong_thanh:{name:'Ông Thành',faces:{front:'front',happy:'happy',angry:'skeptical',shocked:'shocked',eating:'eating'},voice:'ong_thanh'},
+ ong_thanh:{name:'Ông Thăng',faces:{front:'front',happy:'happy',angry:'skeptical',shocked:'shocked',eating:'eating'},voice:'ong_thanh'},
  chu_hai:{name:'Chú Hai',faces:{front:'front',happy:'happy',angry:'front',shocked:'shocked',eating:'happy'},voice:'chu_hai'},
 };
 // voice clip index per mood: 0 arrive/order, 1 hurry, 2 wrong, 3 happy/eat, 4 leave
