@@ -89,11 +89,11 @@ let S={};
 function huySay(o,face,vo){if(face)$('huyAv').style.backgroundImage=`url(assets/a_huy_${face}.webp)`;const b=$('hbub');if(!o){b.classList.remove('show');return}b.textContent=say_(o);b.classList.add('show');if(vo)voice(vo);clearTimeout(b._t);b._t=setTimeout(()=>{b.classList.remove('show');$('huyAv').style.backgroundImage='url(assets/a_huy_happy.webp)'},2600)}
 function say(o,ms){const b=$('bubble');b.textContent=S.speaker&&!S.asked?'♪♫ ~ ♪♫♪ ~ ♫♪':say_(o);b.classList.add('show');clearTimeout(b._t);if(ms)b._t=setTimeout(()=>b.classList.remove('show'),ms)}
 function meo(){const m=$('mbub');m.classList.add('show');sfx.meo();setTimeout(()=>m.classList.remove('show'),1500)}
-function face(f,c){c=c||S.cur;if(!c)return;const ch=CHARS[c.id],h=$('custHead'),body=$('cust');S.face=f;body.style.visibility='visible';
+function face(f,c){c=c||S.cur;if(!c)return;const ch=CHARS[c.id],h=$('custHead'),body=$('cust');S.face=f;body.style.visibility='visible';body.style.height=(ch.h||640)+'px';
  if(ch.special==='coba'){if(f==='eating'){body.src='assets/co_ba_front.webp';const k=640/617*1.12;const place=()=>{const hh=h.naturalHeight*k,ww=h.naturalWidth*k;h.style.height=hh+'px';h.style.top=(515-hh)+'px';h.style.left=((body.offsetWidth||344)-ww)/2+'px';body.style.visibility='hidden'};h.onload=place;h.src='assets/co_ba_eating.webp';h.style.display='block';if(h.complete&&h.naturalHeight)place();return}
   if(f==='front'){h.style.display='none';body.src='assets/co_ba_front.webp';return}
   body.src='assets/co_ba_front.webp';const k=640/617;h.onload=()=>{h.style.height=(h.naturalHeight*k)+'px'};h.src='assets/co_ba_'+f+'.webp';if(h.complete&&h.naturalHeight)h.style.height=(h.naturalHeight*k)+'px';h.style.left=(7*k)+'px';h.style.top=(-1*k)+'px';h.style.display='block';return}
- h.style.display='none';body.src=`assets/c_${c.id}_${ch.faces[f]||ch.faces.front}.webp`;body.style.height=(ch.h||640)+'px'}
+ h.style.display='none';body.src=`assets/c_${c.id}_${ch.faces[f]||ch.faces.front}.webp`}
 function banner(o){const b=$('banner');if(!o){b.classList.remove('show');return}b.textContent=say_(o);b.classList.add('show')}
 function toast(o,ms=2200){const t=$('toast');t.textContent=say_(o);t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms)}
 function setMoney(){$('money').textContent=fmt(S.money||0)}
@@ -138,7 +138,7 @@ function ticket(){const c=S.cur,t=$('ticket');if(!c){t.style.display='none';retu
 /* ---------- bread board ---------- */
 function resetBread(){$('breadImg').src='assets/bread_whole.webp';$('breadOver').style.opacity=0;$('pieces').innerHTML='';$('drizzle').style.opacity=0;$('breadBox').style.visibility='visible';$('breadBox').classList.remove('small');$('cupBox').style.display='none';$('qtyBadge').style.display='none'}
 /* ---------- day flow ---------- */
-function startDay(d){hideMenu();hideCard();stopTick();try{const ks=[];(DAYS[d].cust||[]).forEach(e=>{const v=CHARS[e.c]&&CHARS[e.c].voice;if(v)[0,1,2,3].forEach(i=>ks.push(v+'_'+i))});(STORY['intro'+d]||[]).forEach(l=>l.vo&&ks.push(l.vo));preloadVoices(ks);['dog','cat'].forEach(n=>{if(CBUF[n]===undefined)clip(n,null)});window._pimg=[];(DAYS[d].cust||[]).forEach(e=>{const ch=CHARS[e.c];if(ch&&ch.faces)new Set(Object.values(ch.faces)).forEach(f=>{const im=new Image();im.src='assets/c_'+e.c+'_'+f+'.webp';_pimg.push(im)})})}catch(e){}S={day:d,money:0,happy:0,served:0,lost:0,queue:[],cur:null,pending:[],spawnT:0,events:[],flags:{},mute:false,speaker:false,crying:false,power:false,rain:false,dogArm:0,results:{}};
+function startDay(d){closeDay();hideMenu();hideCard();try{const ks=[];(DAYS[d].cust||[]).forEach(e=>{const v=CHARS[e.c]&&CHARS[e.c].voice;if(v)[0,1,2,3].forEach(i=>ks.push(v+'_'+i))});(STORY['intro'+d]||[]).forEach(l=>l.vo&&ks.push(l.vo));preloadVoices(ks);['dog','cat'].forEach(n=>{if(CBUF[n]===undefined)clip(n,null)});window._pimg=[];(DAYS[d].cust||[]).forEach(e=>{const ch=CHARS[e.c];if(ch&&ch.faces)new Set(Object.values(ch.faces)).forEach(f=>{const im=new Image();im.src='assets/c_'+e.c+'_'+f+'.webp';_pimg.push(im)})})}catch(e){}S={day:d,money:0,happy:0,served:0,lost:0,queue:[],cur:null,pending:[],spawnT:0,events:[],flags:{},mute:false,speaker:false,crying:false,power:false,rain:false,dogArm:0,results:{}};
  const D=DAYS[d];setMoney();buildTrays();resetBread();ticket();setScene(d);
  if(D.contest){vnPlay(STORY.intro7,()=>startContest());return}
  S.pending=D.cust.map((e,i)=>({id:e.c,gag:e.gag,o:e.o,idx:i}));S.events=(D.events||[]).map(e=>Object.assign({},e));
@@ -146,10 +146,27 @@ function startDay(d){hideMenu();hideCard();stopTick();try{const ks=[];(DAYS[d].c
 function setScene(d){$('chloe').classList.remove('cry','hint');$('chloe').style.display=d>=2?'block':'none';$('chloe').src='assets/c_chloe_walker.webp';$('kiosk').style.display=d>=4?'block':'none';$('rainFx').classList.remove('on');$('powerFx').classList.remove('on');$('liveFx').classList.remove('on');$('bgStreet').style.filter=''}
 function runDay(){S.started=true;banner(null);if(DAYS[S.day].rumor){toast(UI.rumor,3500)}startTick()}
 let TICK=null;function startTick(){stopTick();TICK=setInterval(tick,250)}function stopTick(){clearInterval(TICK);TICK=null}
+function dayTimeout(callback, delay){
+ const day=S;
+ return setTimeout(()=>{if(S===day&&!day.closed)callback()},delay)
+}
+function closeDay(){
+ S.closed=true;
+ stopTick();
+ liveOff();
+ ghostStop();
+ down=false;
+ setCarry(null);
+ document.querySelectorAll('.coin').forEach(el=>el.remove());
+ $('choices').innerHTML='';
+ for(const id of ['dItems','dog','dogLoot','bagFly','skipBtn'])$(id).style.display='none';
+ $('trays').style.display='flex'
+}
 function present(){return S.queue.length+(S.cur?1:0)}
-function tick(){if(S.paused||VN.on)return;const D=DAYS[S.day],dt=.25;
+function tick(){if(S.closed||S.paused||VN.on)return;const D=DAYS[S.day],dt=.25;
+ if(S.endless&&S.lost>=3)return endEndless();
  if(S.endless){if(S.pending.length<1)S.pending.push(endlessCust());D.patience=Math.max(44,80-S.served*1.6);D.gap=Math.max(3.5,9-S.served*.25);D.queue=S.served>=10?3:2;
-  if(S.lost>=3&&!S.ending){S.ending=true;S.pending=[];setTimeout(endEndless,1200);return}}
+ }
  // spawn
  S.spawnT-=dt;if(S.pending.length&&present()<D.queue&&(S.spawnT<=0||present()===0)){spawn(S.pending.shift());S.spawnT=S.rainBoost>0?2:D.gap;if(S.rainBoost>0)S.rainBoost--}
  if(!S.cur&&S.queue.length&&!S.busy)promote(S.queue.shift());
@@ -163,7 +180,7 @@ function tick(){if(S.paused||VN.on)return;const D=DAYS[S.day],dt=.25;
  // timed effects
  if(S.powerT>0){S.powerT-=dt;if(S.powerT<=0){S.power=false;$('powerFx').classList.remove('on');toast(L('Có điện lại rồi!','Power is back!'))}}
  if(S.rainT>0){S.rainT-=dt;if(S.rainT<=0){$('rainFx').classList.remove('on');$('bgStreet').style.filter=''}}
- if(!S.endless&&!S.pending.length&&!S.cur&&!S.queue.length&&!S.ending){S.ending=true;setTimeout(endDay,900)}}
+ if(!S.endless&&!S.pending.length&&!S.cur&&!S.queue.length&&!S.ending){S.ending=true;dayTimeout(endDay,900)}}
 function spawn(e){(window.__LOG=window.__LOG||[]).push('spawn '+e.id+' '+Math.round(performance.now()/1000));const c={id:e.id,gag:e.gag,idx:e.idx,order:makeOrder(e.o,e.id),p:100,mistakes:0};const D=DAYS[S.day];
  c.maxP=(D.patience+(c.order.qty-1)*30+(c.order.drink?22:0))*(c.gag==='inlaw'?1.3:c.gag&&c.gag!=='usual'?1.35:1);
  S.events.filter(ev=>ev.onCust===e.idx&&!ev.done).forEach(ev=>{ev.done=1;triggerEvent(ev)});
@@ -173,15 +190,16 @@ function drawQueue(){const q=$('queue');if(!S.queue.length){q.innerHTML='';retur
 function promote(c){(window.__LOG=window.__LOG||[]).push('promote '+c.id+' '+Math.round(performance.now()/1000)+' p'+Math.round(c.p));S.cur=c;S.unit=1;S.placed={};S.sauced=false;S.drinkDone=false;S.step='arrive';S.busy=true;S.asked=false;resetBread();
  const w=$('custWrap');w.className='abs';face('front');ticket();$('pat').style.display='block';$('patL').style.display='block';
  requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('in')));
- c.hi=greet(c);setTimeout(()=>{if(S.cur!==c)return;say(c.hi);cv(c,'arrive');if(c.gag==='live')liveOn();
+ c.hi=greet(c);dayTimeout(()=>{if(S.cur!==c)return;say(c.hi);cv(c,'arrive');if(c.gag==='live')liveOn();
   if(c.gag==='inlaw')return inlawIntro(c);
-  const go=ms=>setTimeout(()=>{if(S.cur===c){S.busy=false;step('slice')}},ms);
-  if(c.gag==='chotdon'){liveOn();return setTimeout(()=>{if(S.cur!==c)return;face('happy');say(L('Ối, cả nhà chốt đơn rồi! Làm 2 ổ nha em! Chốt! Chốt!','Oh, the fam is ordering! Make it 2! Sold! Sold!'),2400);const o=c.order;o.total=o.total/o.qty*2;o.qty=2;ticket();huySay(L('Hả? Ai chốt?','Huh? Who ordered?'),'shocked');go(2600)},1900)}
-  if(c.gag==='genz'){return setTimeout(()=>{if(S.cur!==c)return;huySay(L('…Hả? Em nói tiếng gì vậy?','…Huh? What language is that?'),'shocked');toast(L('📖 Na dịch: "khum" = không · "ét o ét" = gấp lắm · "chằm zn" = buồn xỉu','📖 Na translates: "khum" = no · "ét o ét" = SOS, hurry · "chằm zn" = super sad'));go(2600)},1900)}
-  if(c.gag==='coach'){return setTimeout(()=>{if(S.cur!==c)return;face('happy');say(L('À mà em có muốn mua khóa học "Bán bánh mì 0 đồng ra tỷ phú" không? Có 20 nghìn thôi!','Hey, want my course "Bánh mì to billionaire from zero"? Only 20k!'),3000);choice(L('Mua khóa học (−20k)','Buy the course (−20k)'),L('Thôi khỏi anh','No thanks'),()=>{S.money=Math.max(0,S.money-20000);setMoney();face('happy');say(L('Bài học số 1: đừng mua khóa học của người lạ. Cảm ơn em nha!','Lesson one: never buy a course from strangers. Thanks!'),2600);huySay(L('…Mất 20 nghìn để học câu đó?!','…I paid 20k for THAT?!'),'shocked');go(2600)},()=>{face('shocked');say(L('Từ chối dứt khoát! Tư duy tốt, em out trình anh rồi.','Firm no! Great mindset, you out-leveled me.'),2400);go(2400)})},1900)}
-  if(c.gag==='shipper'){sfx.pop();toast(L('📱 Reng reng… reng reng…','📱 Ring ring… ring ring…'))}
+  const go=ms=>dayTimeout(()=>{if(S.cur===c){S.busy=false;step('slice')}},ms);
+  if(c.gag==='chotdon'){liveOn();return dayTimeout(()=>{if(S.cur!==c)return;face('happy');say(L('Ối, cả nhà chốt đơn rồi! Làm 2 ổ nha em! Chốt! Chốt!','Oh, the fam is ordering! Make it 2! Sold! Sold!'),2400);const o=c.order;o.total=o.total/o.qty*2;o.qty=2;ticket();huySay(L('Hả? Ai chốt?','Huh? Who ordered?'),'shocked');go(2600)},1900)}
+  if(c.gag==='genz'){return dayTimeout(()=>{if(S.cur!==c)return;huySay(L('…Hả? Em nói tiếng gì vậy?','…Huh? What language is that?'),'shocked');toast(L('📖 Na dịch: "khum" = không · "ét o ét" = gấp lắm · "chằm zn" = buồn xỉu','📖 Na translates: "khum" = no · "ét o ét" = SOS, hurry · "chằm zn" = super sad'));go(2600)},1900)}
+  if(c.gag==='coach'){return dayTimeout(()=>{if(S.cur!==c)return;face('happy');say(L('À mà em có muốn mua khóa học "Bán bánh mì 0 đồng ra tỷ phú" không? Có 20 nghìn thôi!','Hey, want my course "Bánh mì to billionaire from zero"? Only 20k!'),3000);choice(L('Mua khóa học (−20k)','Buy the course (−20k)'),L('Thôi khỏi anh','No thanks'),()=>{S.money=Math.max(0,S.money-20000);setMoney();face('happy');say(L('Bài học số 1: đừng mua khóa học của người lạ. Cảm ơn em nha!','Lesson one: never buy a course from strangers. Thanks!'),2600);huySay(L('…Mất 20 nghìn để học câu đó?!','…I paid 20k for THAT?!'),'shocked');go(2600)},()=>{face('shocked');say(L('Từ chối dứt khoát! Tư duy tốt, em out trình anh rồi.','Firm no! Great mindset, you out-leveled me.'),2400);go(2400)})},1900)}
+  if(c.gag==='shipper'){face('angry');sfx.pop();toast(L('📱 Reng reng… reng reng…','📱 Ring ring… ring ring…'));
+   dayTimeout(()=>{if(S.cur===c&&S.face==='angry'&&!c.warned&&S.step!=='done')face('front')},1200)}
   if(c.gag==='teacher_in')return teacherIntro(c);
-  setTimeout(()=>{if(S.cur===c){S.busy=false;step('slice')}},700)},850)}
+  dayTimeout(()=>{if(S.cur===c){S.busy=false;step('slice')}},700)},850)}
 function greet(c){const o=c.order,line=orderLine(c),lc=line.charAt(0).toLowerCase()+line.slice(1);const G={
  co_ba:L(`Con ơi, cho cô ${line}. Má con đâu rồi?`,`Sweetie, ${lc} for me. Where's your mom?`),
  anh_tuan:L(`Em ơi ${line}, KHÔNG ỚT nha! Anh trễ làm rồi!`,`${line}, NO CHILI! I'm late!`),
@@ -207,15 +225,15 @@ function greet(c){const o=c.order,line=orderLine(c),lc=line.charAt(0).toLowerCas
  co_dieu:L(`Cô ăn kiêng nha: ${line}, KHÔNG bơ, KHÔNG pa-tê!`,`I'm on a diet: ${lc}, NO butter, NO pâté!`),
  ong_thanh:L(`Ui chao, ${line}. Nhiều ớt, nước mắm nghe con.`,`Oh my, ${lc}. Extra chili, fish sauce.`),
  };const g=G[c.id]||L(`Cho ${line}!`,`${line} please!`);const fix=t=>typeof t==='string'?t.split(line).map((x,i,arr)=>i<arr.length-1&&!/(^|[.!?:]\s*)$/.test(x)?x+lc:(i<arr.length-1?x+line:x)).join(''):t;return typeof g==='object'?{vi:fix(g.vi),en:fix(g.en)}:fix(g)}
-function leave(c){(window.__LOG=window.__LOG||[]).push('leave '+c.id+(c===S.cur?' cur':' wait'));if(c===S.cur){S.step='done';banner(null);hint([]);setCarry(null);setPose('open');face('angry');say(L('Thôi khỏi! Đi tiệm khác!','Forget it, I\'m going elsewhere!'));cv(c,'leave');huySay(L('Thôi, coi như đã bán… trong tâm tưởng.','Well… sold in spirit.'),'shocked');sfx.bad();S.lost++;liveOff();S.busy=true;setTimeout(()=>exitCust(),1900)}
+function leave(c){(window.__LOG=window.__LOG||[]).push('leave '+c.id+(c===S.cur?' cur':' wait'));if(c===S.cur){S.step='done';banner(null);hint([]);setCarry(null);setPose('open');face('angry');say(L('Thôi khỏi! Đi tiệm khác!','Forget it, I\'m going elsewhere!'));cv(c,'leave');huySay(L('Thôi, coi như đã bán… trong tâm tưởng.','Well… sold in spirit.'),'shocked');sfx.bad();S.lost++;liveOff();S.busy=true;dayTimeout(()=>exitCust(),1900)}
  else{S.queue=S.queue.filter(x=>x!==c);S.lost++;if(c.gag==='teacher'){S.pending.unshift({id:'co_hanh',gag:'teacher_in',o:{r:'op_la',drink:'cafe'},idx:99});S.spawnT=0}toast(L(`${CHARS[c.id].name} chờ lâu quá, bỏ đi rồi!`,`${CHARS[c.id].name} gave up waiting!`));sfx.bad();drawQueue()}}
-function exitCust(){$('custWrap').classList.add('out');$('bubble').classList.remove('show');setTimeout(()=>{S.cur=null;S.busy=false;S.step='idle';ticket();$('pat').style.display='none';$('patL').style.display='none';resetBread();setCarry(null);setPose('open');hint([]);$('choices').innerHTML='';$('skipBtn').style.display='none';$('dItems').style.display='none';$('trays').style.display='flex'},950)}
+function exitCust(){$('custWrap').classList.add('out');$('bubble').classList.remove('show');dayTimeout(()=>{S.cur=null;S.busy=false;S.step='idle';ticket();$('pat').style.display='none';$('patL').style.display='none';resetBread();setCarry(null);setPose('open');hint([]);$('choices').innerHTML='';$('skipBtn').style.display='none';$('dItems').style.display='none';$('trays').style.display='flex'},950)}
 function mistake(why){const c=S.cur;c.mistakes++;c.p=Math.max(1,c.p-15);face('shocked');say(why||L('Ủa? Đâu có kêu cái đó!','Huh? I didn\'t order that!'),1800);cv(c,'wrong');huySay(L('Ơ chết, tay nó tự bốc á!','Oops… my hand did it!'),'shocked','huy_1');meo();sfx.bad();if(c.gag==='live')liveComment(-1);
- if(DAYS[S.day].rumor){setTimeout(()=>{if(S.cur===c){c.rumorLeft=1;leave(c)}},1100);return true}
- setTimeout(()=>{if(S.cur===c&&!['done'].includes(S.step))face(c.p<28?'angry':'front')},900);return false}
+ if(DAYS[S.day].rumor){S.busy=true;down=false;dayTimeout(()=>{if(S.cur===c&&S.step!=='done'){c.rumorLeft=1;leave(c)}},1100);return true}
+ dayTimeout(()=>{if(S.cur===c&&!['done'].includes(S.step))face(c.p<28?'angry':'front')},900);return false}
 /* ---------- steps ---------- */
 const STEP_UI={slice:'slice',butter:'butter',pate:'pate',fill:'fill',sauce:'sauce',wrap:'wrap',give:'give'};
-function step(s){ghostStop();S.step=s;S.prog=0;S.armed=false;setTimeout(tutGhost,450);if(STEP_UI[s])banner(UI[STEP_UI[s]]);setPose(s==='slice'?'bread_knife':'open');setCarry(null);$('skipBtn').style.display='none';
+function step(s){ghostStop();S.step=s;S.prog=0;S.armed=false;dayTimeout(tutGhost,450);if(STEP_UI[s])banner(UI[STEP_UI[s]]);setPose(s==='slice'?'bread_knife':'open');setCarry(null);$('skipBtn').style.display='none';
  const o=S.cur.order;
  if(s==='slice'||s==='wrap'||s==='give')hint([$('breadBox')].concat(s==='give'&&o.drink?[$('cupBox')]:[]));
  if(s==='butter'||s==='pate'){hint([$(s==='butter'?'butterBowl':'pateBowl')]);if(S.day>=5){const b=$('skipBtn');b.textContent=say_(s==='butter'?UI.noButter:UI.noPate);b.style.display='block'}}
@@ -235,7 +253,7 @@ stage.addEventListener('pointerdown',e=>{ghostStop();P=toP(e);drawHand();ac();if
  const ch=$('chloe');if(S.started&&ch.style.display!=='none'&&inR(P,R(ch),S.crying?40:0)&&(S.crying||!S.cur||['arrive','done','idle'].includes(S.step))){chloeTap();return}
  const mo=$('mochi');if(S.started&&!S.crying&&mo.offsetParent&&inR(P,R(mo),0)&&!(S.cur&&['fill','sauce'].includes(S.step))){meo();return}
  if(S.busy||!S.cur)return;down=true;try{stage.setPointerCapture(e.pointerId)}catch(_){}lastX=minX=maxX=P.x;lastY=P.y;stirA=null;onDown()});
-const up=e=>{if(tutOn()){clearTimeout(S.tutT);S.tutT=setTimeout(()=>{if(!down)tutGhost()},1500)}if(!down)return;down=false;P=toP(e);onUp()};stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+const up=e=>{if(tutOn()){clearTimeout(S.tutT);S.tutT=dayTimeout(()=>{if(!down)tutGhost()},1500)}if(!down)return;down=false;P=toP(e);onUp()};stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
 const BR=()=>R($('breadBox'));
 function onDown(){const s=S.step,o=S.cur.order;
  if((s==='butter'||s==='pate')&&!S.armed){const bowl=$(s==='butter'?'butterBowl':'pateBowl');if(inR(P,R(bowl),10)){
@@ -248,9 +266,9 @@ function onDown(){const s=S.step,o=S.cur.order;
  if(s==='drink')drinkDown()}
 function onDrag(){const s=S.step,br=BR(),over=inR(P,br,20);
  if(s==='slice'&&over){minX=Math.min(minX,P.x);maxX=Math.max(maxX,P.x);if(Math.random()<.15)tone(500+Math.random()*200,.04,'triangle',.05);
-  if(maxX-minX>br.w*(has('knife')?.35:.62)){$('breadImg').src='assets/bread_sliced.webp';sfx.swish();down=false;setTimeout(()=>step('butter'),250)}}
+  if(maxX-minX>br.w*(has('knife')?.35:.62)){$('breadImg').src='assets/bread_sliced.webp';sfx.swish();down=false;dayTimeout(()=>step('butter'),250)}}
  if((s==='butter'||s==='pate')&&S.armed&&over){S.prog=Math.min(1,S.prog+Math.abs(P.x-lastX)/(has('spread')?730:1100));const ov=$('breadOver');ov.src='assets/'+(s==='butter'?'bread_butter':'bread_butter_pate')+'.webp';ov.style.opacity=S.prog;if(Math.random()<.1)tone(260+S.prog*300,.05,'triangle',.05);
-  if(S.prog>=1){$('breadImg').src=ov.src;ov.style.opacity=0;sfx.ding();down=false;setCarry(null);setTimeout(()=>step(s==='butter'?'pate':'fill'),250)}}
+  if(S.prog>=1){$('breadImg').src=ov.src;ov.style.opacity=0;sfx.ding();down=false;setCarry(null);dayTimeout(()=>step(s==='butter'?'pate':'fill'),250)}}
  if(s==='drink')drinkDrag();
  lastX=P.x;lastY=P.y}
 setInterval(()=>{if(down&&S.cur&&!S.busy){if(S.step==='sauce'&&S.armed&&inR(P,BR(),20))sauceTick();if(S.step==='drink'&&S.pouring)pourTick()}},40);
@@ -269,20 +287,20 @@ function dropPiece(k,fx){const c=S.cur,o=c.order,need=o.req[k]||0,have=S.placed[
  const im=document.createElement('img');im.src='assets/'+PIECE[k]+'.webp';const w=k==='egg'?150:110;im.style.width=w+'px';
  im.style.left=(Math.min(.78,Math.max(.22,fx))*520-w/2)+'px';im.style.top=((.2+Math.random()*.16)*280)+'px';im.style.transform=`rotate(${Math.random()*50-25}deg)`;im.dataset.k=k;$('pieces').appendChild(im);sfx.plop();
  S.placed[k]=have+1;ticket();hintTrays();
- if(S.dogWatch&&Object.values(S.placed).reduce((a,b)=>a+b,0)===2){S.dogWatch=false;S.dogArm--;setTimeout(dogRun,800)}
+ if(S.dogWatch&&Object.values(S.placed).reduce((a,b)=>a+b,0)===2){S.dogWatch=false;S.dogArm--;dayTimeout(dogRun,800)}
  checkFill()}
-function checkFill(){const o=S.cur.order;if(Object.entries(o.req).every(([k,n])=>(S.placed[k]||0)>=n)&&!S.dogRun)setTimeout(()=>{if(S.step==='fill'&&!S.dogRun)step('sauce')},350)}
+function checkFill(){const o=S.cur.order;if(Object.entries(o.req).every(([k,n])=>(S.placed[k]||0)>=n)&&!S.dogRun)dayTimeout(()=>{if(S.step==='fill'&&!S.dogRun)step('sauce')},350)}
 function finishSauce(){const o=S.cur.order;setCarry(null);setPose('open');S.sauced=true;ticket();const wrong=S.armed!==o.sauce;S.armed=false;
- if(wrong){if(mistake(o.sauce==='fish'?L('Nước mắm mà em!','I said fish sauce!'):L('Ủa, sai chai rồi!','Wrong bottle!')))return}else sfx.ding();setTimeout(()=>step('wrap'),400)}
+ if(wrong){if(mistake(o.sauce==='fish'?L('Nước mắm mà em!','I said fish sauce!'):L('Ủa, sai chai rồi!','Wrong bottle!')))return}else sfx.ding();dayTimeout(()=>step('wrap'),400)}
 function wrap(){S.busy=true;hint([]);tone(300,.25,'triangle',.08,200);$('pieces').innerHTML='';$('drizzle').style.opacity=0;$('breadImg').src='assets/bread_wrapped.webp';
- const o=S.cur.order;setTimeout(()=>{S.busy=false;if(!S.cur)return;
+ const o=S.cur.order;dayTimeout(()=>{S.busy=false;if(!S.cur)return;
   if(S.unit<o.qty){S.unit++;if(S.cur.gag==='change'&&S.unit===2)return orderChange();bagOne();return}
   S.unit=o.qty+1;ticket();if(o.qty>1){$('qtyBadge').textContent='×'+o.qty;$('qtyBadge').style.display='block'}
   if(o.drink){step('drink')}else step('give')},400)}
-function bagOne(){const b=$('bagFly');b.style.display='block';b.classList.remove('go');void b.offsetWidth;b.classList.add('go');sfx.pop();setTimeout(()=>b.style.display='none',600);
+function bagOne(){const b=$('bagFly');b.style.display='block';b.classList.remove('go');void b.offsetWidth;b.classList.add('go');sfx.pop();dayTimeout(()=>b.style.display='none',600);
  S.placed={};S.sauced=false;ticket();resetBread();toast(L(`Ổ thứ ${S.unit}/${S.cur.order.qty}`,`Loaf ${S.unit}/${S.cur.order.qty}`),1200);step('slice')}
 function orderChange(){S.busy=true;say(L('À khoan! Mấy ổ còn lại đổi qua xíu mại nha em!','Wait! Make the rest meatball bánh mì!'),2600);cv(S.cur,'hurry');huySay(L('Hả?!','What?!'),'shocked');
- setTimeout(()=>{const c=S.cur;if(!c)return;const nr=RECIPES.xiu_mai;c.order.req=Object.assign({},nr.req);c.order.name=L('Chả lụa → xíu mại','Pork roll → meatball');S.busy=false;bagOne()},2200)}
+ dayTimeout(()=>{const c=S.cur;if(!c)return;const nr=RECIPES.xiu_mai;c.order.req=Object.assign({},nr.req);c.order.name=L('Chả lụa → xíu mại','Pork roll → meatball');S.busy=false;bagOne()},2200)}
 /* ---------- drinks ---------- */
 const DLAYER={coffee:'#3b2010'};
 function startDrink(){const o=S.cur.order,D=DRINKS[o.drink];banner(D.steps[0].lab);S.dStep=0;S.dLayers=[];S.dLevel=0;S.dTaps=0;S.dIce=0;S.dGarn=[];S.stir=0;S.phin=0;
@@ -293,14 +311,14 @@ function buildDItems(){const o=S.cur.order,D=DRINKS[o.drink];const items=[];D.st
  $('dItems').innerHTML=items.map(k=>`<div class="ditem" data-k="${k}"><img src="assets/d_${k}.webp" alt=""><span class="lbl">${say_(DITEM[k])}</span></div>`).join('');$('dItems').style.display='flex';
  document.querySelectorAll('.ditem').forEach(el=>{el.onpointerdown=e=>{e.stopPropagation();P=toP(e);drawHand();if(S.busy)return;ditemDown(el.dataset.k,el,e)}})}
 function curDStep(){return DRINKS[S.cur.order.drink].steps[S.dStep]}
-function drinkStepUI(){const s=curDStep();if(!s)return;setTimeout(tutGhost,350);banner(s.lab);const els=[...document.querySelectorAll('.ditem')];
+function drinkStepUI(){const s=curDStep();if(!s)return;dayTimeout(tutGhost,350);banner(s.lab);const els=[...document.querySelectorAll('.ditem')];
  if(s.t==='fruit')hint(els.filter(e=>FRUITS[e.dataset.k]));else if(s.item)hint(els.filter(e=>e.dataset.k===s.item));else hint([$('cupBox')]);
  $('band').style.display=s.t==='hold'?'block':'none';if(s.t==='hold'){const [lo,hi]=bandFor(s);$('band').style.bottom=(30+lo*250)+'px';$('band').style.height=((hi-lo)*250)+'px'}}
 function bandFor(s){let [lo,hi]=s.band;if(S.cur.order.strong&&s.item==='kettle'){lo=.40;hi=.52}if(has('pour')){lo-=.04;hi+=.04}return[lo,hi]}
 function ditemDown(k,el){const s=curDStep();if(!s)return;
  if(s.t==='fruit'){if(!FRUITS[k]){return dWrong()}if(k!==S.cur.order.fruit){dWrong(L('Sai trái rồi em!','Wrong fruit!'));return}S.dGarn.push(k);sfx.plop();drawCup();return nextD()}
  if(s.item!==k){if(['stir','shake'].includes(s.t))return;return dWrong()}
- if(s.t==='tap'){S.dTaps++;if(k==='ice'){S.dIce++;sfx.ice()}else if(k==='phin'){S.phin=1;sfx.plop()}else{S.dGarn.push(k);sfx.plop()}setPose('pinch');setCarry({type:'ditem',src:'d_'+k});setTimeout(()=>{setCarry(null);setPose('open')},250);drawCup();if(S.dTaps>=s.n){S.dTaps=0;nextD()}}
+ if(s.t==='tap'){S.dTaps++;if(k==='ice'){S.dIce++;sfx.ice()}else if(k==='phin'){S.phin=1;sfx.plop()}else{S.dGarn.push(k);sfx.plop()}setPose('pinch');setCarry({type:'ditem',src:'d_'+k});dayTimeout(()=>{setCarry(null);setPose('open')},250);drawCup();if(S.dTaps>=s.n){S.dTaps=0;nextD()}}
  if(s.t==='hold'){S.pouring=k;down=true;setPose('fist');setCarry({type:'ditem',src:'d_'+k,tilt:1});S.dLayerStart=S.dLevel}}
 function dWrong(msg){if(mistake(msg||L('Ủa, bỏ cái gì vậy em?','Hey, what are you putting in?')))return}
 function pourTick(){const s=curDStep();if(!s||s.t!=='hold')return;S.dLevel=Math.min(1,S.dLevel+.012);sfx.pour();const col=s.layer==='fruit'?FRUITS[S.cur.order.fruit].c:s.layer;S.dLayers[S.dStep]={from:S.dLayerStart,to:S.dLevel,c:col};drawCup()}
@@ -312,34 +330,34 @@ function drinkUp(){if(!S.pouring)return;const s=curDStep();S.pouring=null;setCar
  if(S.dLevel<lo)return toast(L('Chưa tới vạch, rót thêm!','Not enough yet, pour more!'),1200);
  if(S.dLevel>hi){S.dLevel=hi;S.dLayers[S.dStep].to=hi;drawCup();if(dWrong(s.item==='kettle'&&S.cur.order.strong?L('Nhạt quá em ơi…','Too weak…'):L('Tràn rồi kìa!','It\'s overflowing!')))return}else sfx.ding();
  nextD()}
-function nextD(){S.dStep++;const D=DRINKS[S.cur.order.drink];if(S.dStep>=D.steps.length){S.drinkDone=true;ticket();drawCup(true);$('band').style.display='none';hint([]);sfx.ding();setTimeout(()=>{$('dItems').style.display='none';$('trays').style.display='flex';$('breadBox').classList.remove('small');step('give')},450)}else drinkStepUI()}
+function nextD(){S.dStep++;const D=DRINKS[S.cur.order.drink];if(S.dStep>=D.steps.length){S.drinkDone=true;ticket();drawCup(true);$('band').style.display='none';hint([]);sfx.ding();dayTimeout(()=>{$('dItems').style.display='none';$('trays').style.display='flex';$('breadBox').classList.remove('small');step('give')},450)}else drinkStepUI()}
 function drawCup(done){const g=$('cupLiq');let h='',top='';const H=250,B=300;S.dLayers.forEach(l=>{if(!l)return;const y1=B-l.to*H,y0=B-l.from*H;h+=`<rect x="22" y="${y1}" width="136" height="${Math.max(0,y0-y1)}" fill="${l.c}" opacity=".92"/>`});
  for(let i=0;i<S.dIce;i++)h+=`<rect x="${36+i*40}" y="${B-Math.max(.25,S.dLevel)*H+10+i*14}" width="34" height="30" rx="6" fill="#e9f7ff" stroke="#9fc7da" stroke-width="3" opacity=".9"/>`;
  S.dGarn.forEach((k,i)=>{h+=`<image href="assets/d_${k}.webp" x="${30+(i%3)*42}" y="${B-Math.max(.3,S.dLevel)*H+30+Math.floor(i/3)*30}" width="${k==='lemongrass'?40:46}" height="46"/>`});
  if(S.phin&&S.dStep<=1)top+=`<image href="assets/d_phin.webp" x="30" y="-60" width="120" height="130"/>`;
  if(done)top+=`<rect x="112" y="-40" width="12" height="200" rx="5" fill="#e8434f" stroke="#4a2a12" stroke-width="3"/>`;g.innerHTML=h;$('cupTop').innerHTML=top}
 /* ---------- dog ---------- */
-function dogRun(){if(S.step!=='fill')return;const d=$('dog'),lt=$('dogLoot');
- if(has('bone')){d.style.display='block';sfx.bark();huySay(L('Kẹo! Ăn xương đi nè!','Kẹo! Have a bone!'),'happy');let t0=performance.now();(function fr(now){const u=(now-t0)/2400;if(u>=1){d.style.display='none';return}d.style.left=(1650-1950*u)+'px';d.style.top=(470-Math.sin(u*Math.PI*3)**2*60)+'px';requestAnimationFrame(fr)})(t0);return}
+function dogRun(){if(S.step!=='fill')return;const day=S,d=$('dog'),lt=$('dogLoot');
+ if(has('bone')){d.style.display='block';sfx.bark();huySay(L('Kẹo! Ăn xương đi nè!','Kẹo! Have a bone!'),'happy');let t0=performance.now();(function fr(now){if(S!==day||day.closed)return;const u=(now-t0)/2400;if(u>=1){d.style.display='none';return}d.style.left=(1650-1950*u)+'px';d.style.top=(470-Math.sin(u*Math.PI*3)**2*60)+'px';requestAnimationFrame(fr)})(t0);return}
  const pcs=[...$('pieces').children];const tgt=pcs[pcs.length-1];if(!tgt)return;
  S.dogRun=true;S.stolen=tgt;tgt.style.visibility='hidden';const k=tgt.dataset.k;S.placed[k]=Math.max(0,(S.placed[k]||1)-1);ticket();hintTrays();
  lt.src=tgt.src;lt.style.display='block';d.style.display='block';sfx.bark();huySay(L('KẸO! Trả bánh mì đây!','KẸO! Give it back!'),'angry','huy_2');face('shocked');say(L('Ơ! Con chó!','Hey! A dog!'),1500);
- const t0=performance.now();(function fr(now){if(!S.dogRun)return;const u=(now-t0)/2600;if(u>=1){d.style.display='none';lt.style.display='none';S.dogRun=false;S.dogStolen=true;tgt.remove();huySay(L('Tiền chả lụa tao trừ vào tiền xương của mày!','That\'s coming out of your bone budget!'),'angry');face('front');checkFill();return}
+ const t0=performance.now();(function fr(now){if(S!==day||day.closed||!S.dogRun)return;const u=(now-t0)/2600;if(u>=1){d.style.display='none';lt.style.display='none';S.dogRun=false;S.dogStolen=true;tgt.remove();huySay(L('Tiền chả lụa tao trừ vào tiền xương của mày!','That\'s coming out of your bone budget!'),'angry');face('front');checkFill();return}
   const dx=1650-1950*u,dy=470-Math.sin(u*Math.PI*3)**2*90;d.style.left=dx+'px';d.style.top=dy+'px';lt.style.left=(dx-10)+'px';lt.style.top=(dy+48)+'px';lt.style.transform=`rotate(${Math.sin(now/90)*15-20}deg)`;requestAnimationFrame(fr)})(t0)}
-function catchDog(){S.dogRun=false;$('dog').style.display='none';$('dogLoot').style.display='none';if(S.stolen){S.stolen.style.visibility='visible';const k=S.stolen.dataset.k;S.placed[k]=(S.placed[k]||0)+1;ticket();hintTrays()}sfx.ding();huySay(L('Hehe, hụt rồi Kẹo!','Ha! Missed me, Kẹo!'),'happy');face('happy');setTimeout(()=>face('front'),900);checkFill()}
+function catchDog(){S.dogRun=false;$('dog').style.display='none';$('dogLoot').style.display='none';if(S.stolen){S.stolen.style.visibility='visible';const k=S.stolen.dataset.k;S.placed[k]=(S.placed[k]||0)+1;ticket();hintTrays()}sfx.ding();huySay(L('Hehe, hụt rồi Kẹo!','Ha! Missed me, Kẹo!'),'happy');face('happy');dayTimeout(()=>face('front'),900);checkFill()}
 /* ---------- events ---------- */
 function triggerEvent(ev){const t=ev.type;
  if(t==='dog')S.dogArm++;
  if(t==='doggang'){S.dogArm+=3;toast(L('Kẹo dẫn cả bầy chó tới!','Kẹo brought the whole gang!'))}
- if(t==='chloe')setTimeout(chloeCry,4000);
+ if(t==='chloe')dayTimeout(chloeCry,4000);
  if(t==='rain'){S.rainT=45;S.rainBoost=2;$('rainFx').classList.add('on');$('bgStreet').style.filter='saturate(.7) brightness(.8)';toast(UI.rain);tone(120,1.5,'sawtooth',.03)}
- if(t==='power'){setTimeout(()=>{S.power=true;S.powerT=30;$('powerFx').classList.add('on');toast(UI.power);sfx.bad()},3000)}
+ if(t==='power'){dayTimeout(()=>{S.power=true;S.powerT=30;$('powerFx').classList.add('on');toast(UI.power);sfx.bad()},3000)}
  if(t==='speaker'){S.speaker=true;S.mute=true;$('speakerFx').classList.add('on');toast(UI.speakerOn)}}
 function chloeCry(){if(!S.started||S.crying)return;S.crying=true;S.calm=has('rattle')?1:3;const c=$('chloe');c.src='assets/c_chloe_pout.webp';c.classList.add('cry','hint');voice('chloe_1');toast(UI.chloeCry,2500)}
 function chloeTap(){if(!S.crying){sfx.pop();voice('chloe_0');return}S.calm--;sfx.pop();if(S.calm<=0){S.crying=false;const c=$('chloe');c.src='assets/c_chloe_walker.webp';c.classList.remove('cry','hint');voice('chloe_0');huySay(L('Ngoan nha con!','Good girl!'),'happy')}};
 /* ---------- livestream ---------- */
 const LIVE_GOOD=['Ngon quá 😍','Ổ này bao nhiêu ạ?','Anh chủ dễ thương ghê','Mai ghé liền!','10 điểm!','Long Khánh có tiệm này hả?','Mãi keo 🔥','Tuyệt đối điện ảnh!','Đỉnh nóc kịch trần!','Hoá điênggg 😭','Vuýp vuýp!','Cơm nước gì chưa anh chủ?','Chốt 1 ổ ship Biên Hoà!'],LIVE_BAD=['Ủa sai rồi kìa 😂','Anh chủ run tay kìa','Chậm quá à','Tiệm bên kia nhanh hơn','haha bốc nhầm','Ô dề quá 😂','U là trời, sai nữa','Hướng nội hết phần đời còn lại luôn','Anh chủ báo thủ ghê'];
-function liveOn(){$('liveFx').classList.add('on');$('liveChat').innerHTML='';S.liveT=setInterval(()=>liveComment(0),1800)}
+function liveOn(){clearInterval(S.liveT);$('liveFx').classList.add('on');$('liveChat').innerHTML='';S.liveT=setInterval(()=>liveComment(0),1800)}
 function liveOff(){clearInterval(S.liveT);$('liveFx').classList.remove('on')}
 function liveComment(v){const el=document.createElement('div');el.textContent=(v<0?rnd(LIVE_BAD):rnd(LIVE_GOOD));if(v<0)el.className='bad';const box=$('liveChat');box.appendChild(el);while(box.children.length>5)box.firstChild.remove();$('liveViews').textContent='👁 '+(S.day>=5?300+Math.floor(Math.random()*40):3+Math.floor(Math.random()*4))}
 /* ---------- scripted gags ---------- */
@@ -350,23 +368,23 @@ function inlawIntro(c){S.busy=true;vnPlay([
  {who:'huy',f:'shocked',t:L('Dạ ba! Có liền, có liền!','Y… yes sir! Coming right up!'),vo:'huy_3'}],()=>{S.busy=false;if(S.cur===c){face('angry');say(c.hi,3000);step('slice')}})}
 function teacherIntro(c){S.busy=true;vnPlay([{who:'co_hanh',f:'strict',t:L('Bé Tí! Giờ này mà còn ở đây hả? Mai lên văn phòng gặp cô!','Bé Tí! Why aren\'t you in class? Come see me tomorrow!'),vo:'co_hanh_0'},{who:'huy',f:'shocked',t:L('(Bé Tí chạy mất dép…)','(Bé Tí runs off so fast he loses a sandal…)')},{who:'co_hanh',f:'smile',t:L('…Mà thôi, tiện thì cô lấy một ổ luôn.','…Well, since I\'m here, I\'ll have one too.'),vo:'co_hanh_5'}],()=>{S.busy=false;if(S.cur===c){face('front');step('slice')}})}
 /* ---------- serve ---------- */
-function serve(){const c=S.cur,o=c.order;S.step='done';S.busy=true;banner(null);hint([]);setCarry(null);setPose('thumbs_up');sfx.ding();huySay(L('Bánh mì ra lò rồi đây!','Fresh out the oven!'),'happy','huy_0');setTimeout(()=>setPose('open'),800);liveOff();
+function serve(){const c=S.cur,o=c.order;S.step='done';S.busy=true;banner(null);hint([]);setCarry(null);setPose('thumbs_up');sfx.ding();huySay(L('Bánh mì ra lò rồi đây!','Fresh out the oven!'),'happy','huy_0');dayTimeout(()=>setPose('open'),800);liveOff();
  let pay=o.total,tip=c.p>55?5000:c.p>28?2000:0,happy=c.mistakes===0;if(has('speaker'))tip*=1.2;if(has('led'))tip*=1.3;if(c.gag==='live'&&happy)tip*=2;
  const finish=(ms=0,eatLine)=>{S.money+=pay+tip;S.served++;if(happy)S.happy++;setMoney();coinPop(pay+tip);
-  setTimeout(()=>{face('eating');say(eatLine||(happy?L('Ngon quá trời!','So delicious!'):L('Cũng được…','It\'s okay…')),2200);if(happy)cv(c,'happy');setTimeout(()=>{S.busy=false;exitCust()},2300)},ms)};
+  dayTimeout(()=>{face('eating');say(eatLine||(happy?L('Ngon quá trời!','So delicious!'):L('Cũng được…','It\'s okay…')),2200);if(happy)cv(c,'happy');dayTimeout(()=>{S.busy=false;exitCust()},2300)},ms)};
  const g=c.gag;
  if(g==='mukbang'&&happy){tip+=5000;return finish(0,L('Ba ổ một lần… ngon bá cháy! Năm sao Đồng Nai luôn!','Three in one go… insanely good! Five Đồng Nai stars!'))}
  if(g==='shipper'&&happy){tip+=5000;return finish(0,L('Năm sao cho anh! Em bay đây!','Five stars for you! Gotta fly!'))}
  if(g==='coach'&&happy)return finish(0,L('Bánh mì này… tư duy triệu đô! Anh sẽ làm khóa học về nó.','This bánh mì… million-dollar mindset! I\'ll make a course about it.'));
  if(g==='genz'&&happy)return finish(0,L('Tuyệt đối điện ảnh! Mãi keo anh ơi!','Absolutely cinematic! You\'re the GOAT!'));
  if(g==='chotdon'){if(happy)tip=Math.round(tip*1.5)+5000;return finish(0,happy?L('Cả nhà ơi, ngon hoá điênggg! Link tiệm chị để ở bình luận nha!','Fam, this is INSANE! Shop link in the comments!'):L('Cả nhà ơi, hơi ô dề nha… nhưng vẫn chốt!','Fam, a bit messy… but still sold!'))}
- if(g&&g.startsWith('haggle')&&g!=='haggle5'){const amt={haggle1:1000,haggle2:2000,haggle3:3000,haggle4:5000}[g];face('happy');setTimeout(()=>{face('front');say(g==='haggle4'?L('Ổ này cô lấy giá hôm qua nha. Bớt 5 nghìn!','Charge me yesterday\'s price. 5,000 off!'):L(`Má con hồi đó bớt cho cô ${amt/1000} nghìn hoài à!`,`Your mom always gave me ${amt/1000},000 off!`));voice('co_ba_5');
+ if(g&&g.startsWith('haggle')&&g!=='haggle5'){const amt={haggle1:1000,haggle2:2000,haggle3:3000,haggle4:5000}[g];face('happy');dayTimeout(()=>{face('front');say(g==='haggle4'?L('Ổ này cô lấy giá hôm qua nha. Bớt 5 nghìn!','Charge me yesterday\'s price. 5,000 off!'):L(`Má con hồi đó bớt cho cô ${amt/1000} nghìn hoài à!`,`Your mom always gave me ${amt/1000},000 off!`));voice('co_ba_5');
    choice(L('Dạ, bớt cho cô','OK, discount'),L('Má con dặn không bớt','Mom said no discounts'),()=>{pay-=amt;S.results.cobaDiscount=true;face('happy');say(L('Ngoan! Giống má con y chang.','Good boy! Just like your mom.'));sfx.coin();finish(1800)},()=>{tip=0;face('angry');say(L('Hừ! Mai cô vẫn ghé… nhưng cô méc má con!','Hmph! I\'ll still come… but I\'m telling your mom!'));sfx.bad();finish(2200)})},900);return}
  if(g==='haggle5'){face('front');say(L('Hôm nay cô hông đòi bớt. Ba của Na đang coi kìa.','No discount today. Na\'s dad is watching.'),2400);return finish(2400)}
- if(c.id==='anh_tuan'&&happy){face('eating');setTimeout(()=>{face('shocked');say(L('Ổn. Nhưng… sao không cay vậy em?!','Good. But… why isn\'t it spicy?!'));cv(c,'happy');huySay(L('Anh kêu KHÔNG ỚT mà!!','You SAID no chili!!'),'shocked');setTimeout(()=>{S.money+=pay+tip;S.served++;S.happy++;setMoney();coinPop(pay+tip);setTimeout(()=>{S.busy=false;exitCust()},1500)},1600)},1000);return}
- if(g==='coins'||g==='teacher'){face('happy');say(L('Con trả bằng xu nha chú! Lụm lẹ nha!','Coins, mister! Grab them quick!'));const unit=Math.round(o.total/10/1000)*1000||2000;setTimeout(()=>coins(n=>{pay=n*unit;if(n<10){face('shocked');say(L('Con chỉ có nhiêu đó thôi hà…','That\'s all I\'ve got…'),1600)}
+ if(c.id==='anh_tuan'&&happy){face('eating');dayTimeout(()=>{face('shocked');say(L('Ổn. Nhưng… sao không cay vậy em?!','Good. But… why isn\'t it spicy?!'));cv(c,'happy');huySay(L('Anh kêu KHÔNG ỚT mà!!','You SAID no chili!!'),'shocked');dayTimeout(()=>{S.money+=pay+tip;S.served++;S.happy++;setMoney();coinPop(pay+tip);dayTimeout(()=>{S.busy=false;exitCust()},1500)},1600)},1000);return}
+ if(g==='coins'||g==='teacher'){face('happy');say(L('Con trả bằng xu nha chú! Lụm lẹ nha!','Coins, mister! Grab them quick!'));const unit=Math.round(o.total/10/1000)*1000||2000;dayTimeout(()=>coins(n=>{pay=n*unit;if(n<10){face('shocked');say(L('Con chỉ có nhiêu đó thôi hà…','That\'s all I\'ve got…'),1600)}
    if(g==='teacher'){S.pending.unshift({id:'co_hanh',gag:'teacher_in',o:{r:'op_la',drink:'cafe'},idx:99});S.spawnT=0}finish(n<10?1700:300)}),1100);return}
- if(g==='lottery'){face('happy');setTimeout(()=>{say(L('Mua giùm bà tờ vé số đi con! 10 nghìn thôi.','Buy a lottery ticket, dear! Only 10k.'));cv(c,'arrive');choice(L('Mua 1 tờ (10k)','Buy one (10k)'),L('Thôi bà ơi','No thanks'),()=>{SV.lottery=1;saveSV();S.results.lotteryBought=1;pay-=10000;face('happy');say(L('Cầu cho con trúng số!','May you win!'));finish(1800)},()=>{face('angry');say(L('Hừ, số này trúng đó nghen!','Hmph, these are winning numbers!'));finish(1800)})},900);return}
+ if(g==='lottery'){face('happy');dayTimeout(()=>{say(L('Mua giùm bà tờ vé số đi con! 10 nghìn thôi.','Buy a lottery ticket, dear! Only 10k.'));cv(c,'arrive');choice(L('Mua 1 tờ (10k)','Buy one (10k)'),L('Thôi bà ơi','No thanks'),()=>{SV.lottery=1;saveSV();S.results.lotteryBought=1;pay-=10000;face('happy');say(L('Cầu cho con trúng số!','May you win!'));finish(1800)},()=>{face('angry');say(L('Hừ, số này trúng đó nghen!','Hmph, these are winning numbers!'));finish(1800)})},900);return}
  if(g==='lottery_result'){if(SV.lottery){S.results.lotteryWin=1;pay+=50000;face('happy');say(L('Con ơi! Tờ vé số hôm bữa trúng 50 nghìn nè!','Your ticket won 50k!'),2600);sfx.cheer();SV.lottery=0;saveSV();return finish(2600)}else{face('front');say(L('Số bữa bà mời con trúng 50 nghìn đó. Tiếc chưa!','The number I offered you won 50k. Too bad!'),2600);return finish(2600)}}
  if(g==='inlaw'){S.results.inlawHappy=happy;finish(0,happy?L('Ui chao… được! Ba cho qua!','Oh my… good! You pass!'):L('Cũng tạm. Còn phải học nhiều.','Passable. Still much to learn.'));return}
  if(g==='live'){say(happy?L('Mười điểm, bấm like nha cả nhà!','10/10, smash that like button!'):L('Wow… sáng tạo ghê…','Wow… so… creative…'),2200);return finish(1200)}
@@ -375,7 +393,7 @@ function coinPop(v){const el=document.createElement('div');el.className='moneyPo
 function coins(done){banner(UI.coins);S.busy=true;let got=0,left=10;const els=[];
  for(let j=0;j<10;j++){const el=document.createElement('div');el.className='coin';el.textContent='xu';el.style.left=(330+Math.random()*940)+'px';el.style.top=(150+Math.random()*300)+'px';
   el.addEventListener('pointerdown',ev=>{ev.stopPropagation();el.remove();got++;sfx.coin();if(--left===0)end()});stage.appendChild(el);els.push(el)}
- const tm=setTimeout(end,6000);let ended=false;function end(){if(ended)return;ended=true;clearTimeout(tm);els.forEach(e=>e.remove());banner(null);done(got)}}
+ const tm=dayTimeout(end,6000);let ended=false;function end(){if(ended)return;ended=true;clearTimeout(tm);els.forEach(e=>e.remove());banner(null);done(got)}}
 /* ---------- end of day ---------- */
 const ENDLESS_POOL=['co_ba','anh_tuan','be_ti','chi_linh','mai','ong_nam','ba_sau','chi_thu','minh','be_bong','anh_son','co_dieu','van','bao','tom','coach','chot','tu_mukbang','su_genz','shipper','chu_tu'];
 function endlessCust(){S.eIdx=(S.eIdx||0)+1;let id=rnd(ENDLESS_POOL);if(id===S.lastE)id=rnd(ENDLESS_POOL);S.lastE=id;
@@ -385,14 +403,14 @@ function endlessCust(){S.eIdx=(S.eIdx||0)+1;let id=rnd(ENDLESS_POOL);if(id===S.l
  if(id==='mai')gag='live';if(id==='chot')gag='chotdon';if(id==='tu_mukbang'){gag='mukbang';o.qty=2}if(id==='su_genz'){gag='genz';o.noChili=1;delete o.chili}if(id==='shipper')gag='shipper';if(id==='chi_thu'){o.drink='cafe';o.strong=1}
  return {id,gag,o,idx:S.eIdx}}
 function startEndless(){startDay(8);S.endless=true;S.eIdx=0;toast(L('Bán tới sáng! Để mất 3 khách là đóng tiệm.','Open till dawn! Lose 3 customers and it\'s over.'),3500)}
-function endEndless(){stopTick();banner(null);S.cur=null;S.queue=[];drawQueue();ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('choices').innerHTML='';$('skipBtn').style.display='none';hint([]);setCarry(null);ghostStop();$('pat').style.display='none';$('patL').style.display='none';liveOff();
+function endEndless(){if(S.closed)return;closeDay();banner(null);S.cur=null;S.queue=[];drawQueue();ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('choices').innerHTML='';$('skipBtn').style.display='none';hint([]);setCarry(null);ghostStop();$('pat').style.display='none';$('patL').style.display='none';liveOff();
  const best=Math.max(SV.endBest||0,S.money),isNew=S.money>(SV.endBest||0);SV.endBest=best;SV.bank+=S.money;saveSV();setMusic('eve');sfx.ding();
  card(`<h2>🌙 ${say_(DAYNAME[8])}</h2><div style="font-size:30px">${say_(L('Bán được','Sold'))}: <b>${S.served}</b> ${say_(L('khách','customers'))} · ${say_(UI.earned)}: <b>${fmt(S.money)}</b></div>
   <div style="font-size:30px;color:#c8361f;font-weight:800">${isNew?say_(L('🏆 Kỷ lục mới!','🏆 New record!')):say_(L('Kỷ lục','Record'))+': '+fmt(best)}</div>
   <div style="font-size:24px;color:#8a5a2b">${say_(S.served>=20?L('Na: "Anh bán xuyên đêm luôn á? Mãi keo!"','Na: "You sold all night? Legend!"'):S.served>=10?L('Na: "Cũng vuýp đó anh."','Na: "Pretty slick, dear."'):L('Na: "Mai tập thêm nghe anh."','Na: "Practice more tomorrow, dear."'))}</div>
   <div class="row"><button class="big" id="eAgain">${say_(UI.again)}</button><button class="big alt" id="toShop">🛒 ${say_(UI.shop)}</button><button class="tbtn" id="toMenu">${say_(UI.menu)}</button></div>`);
  $('eAgain').onclick=()=>{hideCard();startEndless()};$('toShop').onclick=()=>shop(()=>endEndless._card());$('toMenu').onclick=()=>{hideCard();showMenu()};endEndless._card=()=>{hideCard();showMenu()}}
-function endDay(){stopTick();const d=S.day,D=DAYS[d];banner(null);S.cur=null;S.queue=[];drawQueue();ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('choices').innerHTML='';$('skipBtn').style.display='none';hint([]);setCarry(null);$('pat').style.display='none';$('patL').style.display='none';$('speakerFx').classList.remove('on');S.speaker=false;S.mute=false;
+function endDay(){if(S.closed)return;closeDay();const d=S.day,D=DAYS[d];banner(null);S.cur=null;S.queue=[];drawQueue();ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('choices').innerHTML='';$('skipBtn').style.display='none';hint([]);setCarry(null);$('pat').style.display='none';$('patL').style.display='none';$('speakerFx').classList.remove('on');S.speaker=false;S.mute=false;
  const stars=D.targets.filter(t=>S.money>=t).length;S.results.money=S.money;S.results.stars=Math.max(0,stars-1);S.results.dogStolen=S.dogStolen;
  SV.bank+=S.money;SV.best[d]=Math.max(SV.best[d]||0,S.money);SV.stars[d]=Math.max(SV.stars[d]||0,stars);if(stars>=1)SV.unlocked=Math.max(SV.unlocked,d+1);saveSV();
  setMusic('eve');vnPlay(eveningScript(d,S.results),()=>dayResults(stars))}
@@ -417,14 +435,14 @@ function nextRound(){const C=S.contest;if(C.round>=5)return endContest();const R
  S.contestJudgeLine=R.line;toast(L(`Vòng ${C.round+1}: giám khảo ${CHARS[c.id].name}`,`Round ${C.round+1}: judge ${CHARS[c.id].name}`),2000);
  S.pending=[];S.queue=[];promoteJudge(c)}
 function promoteJudge(c){S.cur=c;S.unit=1;S.placed={};S.sauced=false;S.drinkDone=false;S.step='arrive';S.busy=true;resetBread();const w=$('custWrap');w.className='abs';face('front');ticket();$('pat').style.display='block';$('patL').style.display='block';
- requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('in')));c.hi=S.contestJudgeLine;setTimeout(()=>{say(c.hi);cv(c,'arrive');setTimeout(()=>{S.busy=false;step('slice');startTick()},800)},850)}
+ requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('in')));c.hi=S.contestJudgeLine;dayTimeout(()=>{say(c.hi);cv(c,'arrive');dayTimeout(()=>{S.busy=false;step('slice');startTick()},800)},850)}
 const _serve=serve;
 serve=function(){if(!S.contest)return _serve();const c=S.cur,C=S.contest;stopTick();S.step='done';S.busy=true;banner(null);hint([]);setCarry(null);setPose('thumbs_up');sfx.ding();
  const sc=Math.round(100*Math.max(0,1-.25*c.mistakes)*(.5+.5*Math.max(0,c.p)/100)),kv=60+Math.floor(Math.random()*22);C.me.push(sc);C.kevin.push(kv);C.round++;drawScore();face('eating');say(L(`Điểm của A Huy: ${sc}! Kevin: ${kv}.`,`Huy scores ${sc}! Kevin: ${kv}.`),2600);if(sc>=kv)sfx.cheer();
- setTimeout(()=>{$('custWrap').classList.add('out');setTimeout(()=>{S.cur=null;S.busy=false;ticket();resetBread();setPose('open');nextRound()},950)},2700)};
+ dayTimeout(()=>{$('custWrap').classList.add('out');dayTimeout(()=>{S.cur=null;S.busy=false;ticket();resetBread();setPose('open');nextRound()},950)},2700)};
 const _leave=leave;
-leave=function(c){if(!S.contest)return _leave(c);const C=S.contest;stopTick();S.step='done';C.me.push(0);C.kevin.push(60+Math.floor(Math.random()*22));C.round++;drawScore();face('angry');say(L('Hết giờ! 0 điểm!','Time\'s up! 0 points!'),2000);sfx.bad();setTimeout(()=>{$('custWrap').classList.add('out');setTimeout(()=>{S.cur=null;S.busy=false;ticket();resetBread();nextRound()},950)},2000)};
-function endContest(){stopTick();const C=S.contest,me=C.me.reduce((a,b)=>a+b,0),kv=C.kevin.reduce((a,b)=>a+b,0),win=me>kv;$('pat').style.display='none';$('patL').style.display='none';
+leave=function(c){if(!S.contest)return _leave(c);const C=S.contest;stopTick();S.step='done';C.me.push(0);C.kevin.push(60+Math.floor(Math.random()*22));C.round++;drawScore();face('angry');say(L('Hết giờ! 0 điểm!','Time\'s up! 0 points!'),2000);sfx.bad();dayTimeout(()=>{$('custWrap').classList.add('out');dayTimeout(()=>{S.cur=null;S.busy=false;ticket();resetBread();nextRound()},950)},2000)};
+function endContest(){closeDay();const C=S.contest,me=C.me.reduce((a,b)=>a+b,0),kv=C.kevin.reduce((a,b)=>a+b,0),win=me>kv;$('pat').style.display='none';$('patL').style.display='none';
  const stars=win?(me>=420?3:me-kv>=60?2:1):0;SV.best[7]=Math.max(SV.best[7]||0,me);SV.stars[7]=Math.max(SV.stars[7]||0,stars);saveSV();S.contest=null;$('scoreBoard').style.display='none';
  setMusic(win?'day':'eve');vnPlay(win?CONTEST_END.win:CONTEST_END.lose,()=>{card(`<h2>${win?say_(L('🏆 Vô địch!','🏆 Champion!')):say_(L('Suýt nữa thôi!','So close!'))}</h2><div style="font-size:64px;color:#e0a800">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div><div>A Huy <b>${me}</b> – Kevin <b>${kv}</b></div><div style="font-size:22px;color:#8a5a2b">Mike Do X Claude</div><div class="row"><button class="big" id="again">${say_(UI.again)}</button><button class="big alt" id="toMenu">${say_(UI.menu)}</button></div>`);$('again').onclick=()=>startDay(7);$('toMenu').onclick=()=>showMenu()})}
 /* ---------- VN dialogue ---------- */
@@ -460,7 +478,7 @@ $('vnSkip').onclick=()=>vnEnd();$('vnLang').onclick=()=>{toggleLang();vnLabels()
 const MT={play:L('▶ Chơi','▶ Play'),cont:L('▶ Chơi tiếp','▶ Continue'),days:L('Chọn ngày','Days'),chars:L('Nhân vật','Characters'),set:L('Cài đặt','Settings'),close:L('Đóng','Close'),day:L('Ngày','Day'),lang:L('Ngôn ngữ','Language'),sound:L('Âm thanh','Sound'),music:L('Nhạc nền','Music'),reset:L('Xóa tiến trình','Reset progress'),on:L('Bật','On'),off:L('Tắt','Off'),locked:L('Cần 1★ ngày trước','Need 1★ on previous day')};
 const GAL=[['a_huy','A Huy',L('"Dễ ợt!"','"Easy!"')],['na','Na',L('"Anh làm chi rứa?!"','"What are you doing?!"')],['ma','Má Lan',L('"Bán dở là má biết liền!"','"I\'ll know if sales are bad!"')],['chloe','Chloe',L('"Ê a… hihi!"','"Ba-ba… hehe!"')],['co_ba','Cô Ba',L('"Má con hồi đó bớt cho cô mà!"','"Your mom gave me discounts!"')],['anh_tuan','Anh Tuấn',L('"Không ớt nha em!"','"No chili!"')],['be_ti','Bé Tí',L('"Cay xé lưỡi luôn!"','"Super spicy!"')],['chi_linh','Chị Linh',L('"Khách hối rồi em ơi!"','"Customer\'s waiting!"')],['chu_tu','Chú Tư',L('"Như mọi khi nha con!"','"The usual, kid!"')],['ong_nam','Ông Năm',L('"Hồi xưa có 500 đồng à!"','"It used to cost 500đ!"')],['mai','Mai',L('"Hello cả nhà!"','"Hi everyone!"')],['ba_sau','Bà Sáu',L('"Mua giùm bà tờ đi con!"','"Buy a ticket, dear!"')],['chi_thu','Chị Thu',L('"Cà phê đậm, thật đậm…"','"Strong coffee, really strong…"')],['bao','Bảo',L('"Lên TikTok được không anh?"','"Is it TikTok-able?"')],['minh','Minh Gym',L('"Thêm thịt! Gấp đôi!"','"Extra meat! Double!"')],['be_bong','Bé Bông',L('"Con chỉ ăn trứng thôi!"','"Only egg for me!"')],['anh_son','Anh Sơn',L('"Cho anh em công trình!"','"For my crew!"')],['kevin','Kevin',L('"Bánh mì fusion, bro!"','"Fusion bánh mì, bro!"')],['tom','Tom',L('"No cilantro, please!"','"No cilantro, please!"')],['co_hanh','Cô giáo Hạnh',L('"Bé Tí! Giờ này mà còn ở đây?"','"Bé Tí! Why aren\'t you in class?"')],['co_dieu','Cô Diệu',L('"Không bơ, không pa-tê!"','"No butter, no pâté!"')],['ong_thanh',CHARS.ong_thanh.name,L('"Răng mà lâu rứa con?"','"Why so slow, son?"')],['van','Cô Vân',L('"Giống má con quá!"','"Just like your mom!"')],['chu_hai','Chú Hai',L('"Alô alô! Hội thi bắt đầu!"','"Hello hello! The contest begins!"')],['keo','Kẹo',L('"Gâu!"','"Woof!"')],['mochi','Mochi',L('"Meo."','"Meow."')],['coach','Coach Tài Lộc',L('"Tư duy triệu đô, ví… 15 nghìn."','"Million-dollar mindset, 15k wallet."')],['chot','Chị Bé Chốt Đơn',L('"Chốt! Chốt! Chốt!"','"Sold! Sold! Sold!"')],['tu_mukbang','Anh Tư Mukbang',L('"Quẹo lựa bà con ơi!"','"Step right up, folks!"')],['su_genz','Bé Su',L('"Khum ớt nha, ét o ét!"','"Khum chili, SOS!"')],['shipper','Anh Long Shipper',L('"Khách gọi ba cuộc rồi anh ơi!"','"My customer called three times!"')]];
 const mt=k=>say_(MT[k]);
-function showMenu(){hideCard();$('panel').classList.remove('on');stopTick();S={day:0};VN.on=false;$('vn').classList.remove('on');ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('pat').style.display='none';$('patL').style.display='none';banner(null);hint([]);resetBread();$('queue').innerHTML='';$('scoreBoard').style.display='none';liveOff();
+function showMenu(){hideCard();$('panel').classList.remove('on');closeDay();S={day:0};VN.on=false;$('vn').classList.remove('on');ticket();$('custWrap').className='abs';$('bubble').classList.remove('show');$('pat').style.display='none';$('patL').style.display='none';banner(null);hint([]);resetBread();$('queue').innerHTML='';$('scoreBoard').style.display='none';liveOff();
  ['rainFx','powerFx','speakerFx'].forEach(i=>$(i).classList.remove('on'));$('chloe').style.display='none';$('kiosk').style.display='none';
  const nd=Math.min(7,SV.unlocked);$('mPlay').textContent=nd>1?mt('cont')+' · '+mt('day')+' '+nd:mt('play');$('mDays').textContent=mt('days');$('mChars').textContent=mt('chars');$('mSet').textContent=mt('set');$('menu').classList.add('on');setPose('point');setMusic('day')}
 function hideMenu(){$('menu').classList.remove('on');$('panel').classList.remove('on')}
