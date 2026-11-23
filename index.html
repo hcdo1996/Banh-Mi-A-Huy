@@ -236,18 +236,6 @@ button{font-family:inherit;cursor:none;border:none}
 #toast{white-space:normal;max-width:1300px;text-align:center}
 #hand,#carry,#ghost{will-change:transform}
 #speakerFx:not(.on) img{animation:none}#vn:not(.on) #vnNext{animation:none}.fx:not(.on){visibility:hidden;transition:opacity 1s,visibility 0s 1s}
-#menu .kb{position:absolute;inset:0;transform-origin:50% 42%;animation:kb 16s ease-in-out infinite alternate;will-change:transform}
-@keyframes kb{to{transform:scale(1.045) translate(-6px,4px)}}
-#menu .logo{position:absolute;left:440px;top:55px;width:720px;height:260px;background:url(assets/menu_key.webp) -440px -55px/1600px 900px;transform-origin:50% 60%;animation:logo 2.4s ease-in-out infinite;will-change:transform}
-@keyframes logo{0%,100%{transform:scale(1.02) rotate(0)}25%{transform:scale(1.06) rotate(-1deg)}50%{transform:scale(1.03) translateY(-6px)}75%{transform:scale(1.06) rotate(1deg)}}
-#menu .stm{position:absolute;top:300px;width:34px;height:70px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.85),rgba(255,255,255,0) 70%);opacity:0;animation:stm 3s ease-out infinite;will-change:transform,opacity}
-@keyframes stm{0%{opacity:0;transform:translateY(20px) scale(.6)}30%{opacity:.8}100%{opacity:0;transform:translateY(-90px) scale(1.4) translateX(10px)}}
-#menu .spk{position:absolute;color:#fff6b0;text-shadow:0 0 10px #ffd23f,0 0 4px #fff;font-style:normal;opacity:0;animation:spk 3.2s ease-in-out infinite;will-change:transform,opacity;pointer-events:none}
-@keyframes spk{0%,100%{opacity:0;transform:scale(.3) rotate(0)}20%{opacity:1;transform:scale(1.1) rotate(45deg)}40%{opacity:0;transform:scale(.4) rotate(90deg)}}
-#menu .pet{position:absolute;top:-30px;width:16px;height:11px;border-radius:60% 0 60% 0;background:#ff6fa8;box-shadow:inset -2px -2px 0 #e0457f;animation:pet 10s linear infinite;will-change:transform;pointer-events:none}
-@keyframes pet{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(40px,230px) rotate(160deg)}50%{transform:translate(-10px,470px) rotate(320deg)}75%{transform:translate(50px,700px) rotate(480deg)}100%{transform:translate(10px,960px) rotate(640deg)}}
-#menu .mbtn.play{animation:pbtn 1.6s ease-in-out infinite}
-@keyframes pbtn{50%{transform:scale(1.06)}}
 </style>
 </head>
 <body>
@@ -289,7 +277,7 @@ button{font-family:inherit;cursor:none;border:none}
   <div id="vnCal"><b id="vnDay"></b><i id="vnTime"></i><span id="vnPart"></span></div>
   <div id="vnBtns"><button class="tbtn" id="vnLang">EN</button><button class="tbtn" id="vnSkip"></button></div>
   <div id="vnBox"><div id="vnName"></div><div class="in" id="vnText"></div><div id="vnNext">▼</div></div></div>
- <div id="menu"><div class="kb"><img class="bg" src="assets/menu_key.webp" alt=""><div class="logo"></div><i class="stm" style="left:968px;animation-delay:0s"></i><i class="stm" style="left:1000px;animation-delay:1s"></i><i class="stm" style="left:1030px;animation-delay:2s"></i></div><i class="spk" style="left:470px;top:80px;animation-delay:0s;font-size:34px">✦</i><i class="spk" style="left:1120px;top:95px;animation-delay:0.7s;font-size:28px">✦</i><i class="spk" style="left:1150px;top:250px;animation-delay:1.4s;font-size:40px">✦</i><i class="spk" style="left:560px;top:270px;animation-delay:2.1s;font-size:26px">✦</i><i class="spk" style="left:845px;top:52px;animation-delay:1.1s;font-size:30px">✦</i><i class="spk" style="left:1060px;top:300px;animation-delay:2.6s;font-size:24px">✦</i><i class="pet" style="left:60px;animation-delay:0s;animation-duration:9s"></i><i class="pet" style="left:180px;animation-delay:2.5s;animation-duration:11s"></i><i class="pet" style="left:300px;animation-delay:5s;animation-duration:10s"></i><i class="pet" style="left:1350px;animation-delay:1.2s;animation-duration:12s"></i><i class="pet" style="left:1480px;animation-delay:4s;animation-duration:9.5s"></i><i class="pet" style="left:1560px;animation-delay:7s;animation-duration:11s"></i><i class="pet" style="left:700px;animation-delay:6s;animation-duration:13s"></i><i class="pet" style="left:240px;animation-delay:8s;animation-duration:10s"></i><div class="bar"><button class="mbtn" id="mDays"></button><button class="mbtn play" id="mPlay"></button><button class="mbtn" id="mChars"></button><button class="mbtn" id="mSet"></button></div></div>
+ <div id="menu"><img class="bg" src="assets/menu_key.webp" alt=""><div class="bar"><button class="mbtn" id="mDays"></button><button class="mbtn play" id="mPlay"></button><button class="mbtn" id="mChars"></button><button class="mbtn" id="mSet"></button></div></div>
  <div id="panel"><div class="box" id="panelBox"></div></div>
  <div id="ov" class="hidden"><div class="card" id="card"></div></div>
  <img id="carry" class="abs" alt="">
