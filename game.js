@@ -85,7 +85,7 @@ function startMusic(mode){MUS.mode=mode||MUS.mode;if(!MUSIC)return stopMusic();c
 function stopMusic(){clearInterval(MUS.timer);clearTimeout(MUS.timer);MUS.timer=null;MUS.on=false}
 function setMusic(mode){if(MUS.mode!==mode){MUS.mode=mode}if(MUSIC&&!MUS.timer)startMusic(mode)}
 /* ---------- layout ---------- */
-function fit(){const de=document.documentElement,vv=window.visualViewport;const W=(vv&&vv.width)||de.clientWidth||innerWidth,H=(vv&&vv.height)||de.clientHeight||innerHeight;SC=Math.min(W/1600,H/900);stage.style.transform=`translate(${(W-1600*SC)/2}px,${(H-900*SC)/2}px) scale(${SC})`;$('rot').style.display=(H>W&&W<760&&!window._rotOk)?'flex':'none'}
+function fit(){SR=null;const de=document.documentElement,vv=window.visualViewport;const W=(vv&&vv.width)||de.clientWidth||innerWidth,H=(vv&&vv.height)||de.clientHeight||innerHeight;SC=Math.min(W/1600,H/900);stage.style.transform=`translate(${(W-1600*SC)/2}px,${(H-900*SC)/2}px) scale(${SC})`;$('rot').style.display=(H>W&&W<760&&!window._rotOk)?'flex':'none'}
 addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,250));if(window.visualViewport)visualViewport.addEventListener('resize',fit);$('rotOk').onclick=()=>{window._rotOk=1;fit()};
 function R(el){const r=el.getBoundingClientRect(),s=stage.getBoundingClientRect();return{x:(r.left-s.left)/SC,y:(r.top-s.top)/SC,w:r.width/SC,h:r.height/SC}}
 const inR=(p,r,pad=0)=>p.x>=r.x-pad&&p.x<=r.x+r.w+pad&&p.y>=r.y-pad&&p.y<=r.y+r.h+pad;
@@ -269,8 +269,9 @@ $('skipBtn').onpointerdown=e=>{e.stopPropagation();const s=S.step,o=S.cur.order;
  step(s==='butter'?'pate':'fill')};
 /* ---------- input ---------- */
 let down=false,lastX=0,minX=0,maxX=0,lastY=0,stirA=null;
-function toP(e){const s=stage.getBoundingClientRect();return{x:(e.clientX-s.left)/SC,y:(e.clientY-s.top)/SC}}
-stage.addEventListener('pointermove',e=>{P=toP(e);drawHand();if(!down||S.busy)return;onDrag()});
+var SR=null;function toP(e){const s=SR||(SR=stage.getBoundingClientRect());return{x:(e.clientX-s.left)/SC,y:(e.clientY-s.top)/SC}}
+window.addEventListener('resize',()=>{SR=null});if(window.visualViewport)visualViewport.addEventListener('resize',()=>{SR=null});window.addEventListener('scroll',()=>{SR=null},true);
+let hRAF=0;stage.addEventListener('pointermove',e=>{P=toP(e);if(!hRAF)hRAF=requestAnimationFrame(()=>{hRAF=0;drawHand()});if(!down||S.busy)return;onDrag()});
 stage.addEventListener('pointerdown',e=>{ghostStop();P=toP(e);drawHand();ac();if(e.target.closest('button,.coin,.ditem,#chloe'))return;if(VN.on){vnClick();return}
  if(S.dogRun&&inR(P,R($('dog')),30)){catchDog();return}
  const ch=$('chloe');if(S.started&&ch.style.display!=='none'&&inR(P,R(ch),S.crying?40:0)&&(S.crying||!S.cur||['arrive','done','idle'].includes(S.step))){chloeTap();return}
