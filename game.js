@@ -52,14 +52,35 @@ const cv=(c,mood)=>{if(S.mute)return;const v=CHARS[c.id]&&CHARS[c.id].voice;if(v
 const MUS={on:false,timer:null,gain:null,step:0,mode:'day'};
 const SCALE=[0,2,4,7,9];
 const MOTIFS={day:[[0,2,4,2,7,4,2,0],[4,7,9,7,4,2,4,-1],[2,4,7,9,12,9,7,4],[7,4,2,0,2,-1,0,-1]],eve:[[0,-1,4,-1,7,-1,4,-1],[2,-1,4,-1,0,-1,-1,-1]],contest:[[0,4,7,12,7,4,0,4],[2,5,9,14,9,5,2,5],[4,7,11,16,11,7,4,7],[7,4,2,0,-1,0,2,4]]};
-function startMusic(mode){MUS.mode=mode||MUS.mode;if(!MUSIC)return stopMusic();const a=ac();if(!a)return;if(!MUS.gain){MUS.gain=a.createGain();MUS.gain.gain.value=.5;MUS.gain.connect(a.destination)}
- if(MUS.timer)return;MUS.step=0;const tick=()=>{const m=MOTIFS[MUS.mode],bpm=MUS.mode==='contest'?150:MUS.mode==='eve'?84:116,beat=60/bpm/2;
-  for(let i=0;i<8;i++){const bar=m[(MUS.step)%m.length],n=bar[i];const base=MUS.mode==='eve'?60:64;
-   if(n>=0){const midi=base+n;tone(440*Math.pow(2,(midi-69)/12),beat*.9,'triangle',.06,0,i*beat,MUS.gain)}
-   if(i%4===0){const root=[0,5,7,0][MUS.step%4];tone(440*Math.pow(2,(base-24+root-69)/12),beat*1.8,'sine',.09,0,i*beat,MUS.gain)}
-   if(MUS.mode!=='eve'&&i%2===1)tone(5000,.02,'square',.012,0,i*beat,MUS.gain)}
-  MUS.step++;MUS.timer=setTimeout(tick,beat*8*1000)};tick();MUS.on=true}
-function stopMusic(){clearTimeout(MUS.timer);MUS.timer=null;MUS.on=false}
+function startMusic(mode){MUS.mode=mode||MUS.mode;if(!MUSIC)return stopMusic();const a=ac();if(!a)return;
+ if(!MUS.gain){MUS.gain=a.createGain();MUS.gain.gain.value=.42;const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=9000;MUS.gain.connect(lp).connect(a.destination);
+  const nb=a.createBuffer(1,a.sampleRate*.5,a.sampleRate),d=nb.getChannelData(0);for(let k=0;k<d.length;k++)d[k]=Math.random()*2-1;MUS.noise=nb}
+ if(MUS.timer)return;MUS.step=0;MUS.next=a.currentTime+.1;
+ const mtof=m=>440*Math.pow(2,(m-69)/12),out=MUS.gain;
+ const osc=(f,t,d,type,v,att=.005,det=0,slide=0)=>{const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(det)o.detune.value=det;if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f*slide),t+d*.6);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+att);g.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(g).connect(out);o.start(t);o.stop(t+d+.05)};
+ const noise=(t,d,v,freq,type='bandpass')=>{const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();s.buffer=MUS.noise;f.type=type;f.frequency.value=freq;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f).connect(g).connect(out);s.start(t);s.stop(t+d+.02)};
+ const kick=(t,v=.5)=>osc(150,t,.28,'sine',v,.002,0,.3),snare=(t,v=.16)=>{noise(t,.16,v,1800);osc(190,t,.08,'triangle',v*.5)},hat=(t,v=.05)=>noise(t,.04,v,8000,'highpass');
+ const S={day:{bpm:112,sw:.58,base:60,ch:[[0,4,7],[-3,0,4],[-7,-3,0],[-5,-1,2]],bass:[0,-3,-7,-5]},
+  eve:{bpm:78,sw:.62,base:57,ch:[[5,9,12,16],[4,7,11,14],[2,5,9,12],[0,4,7,11]],bass:[5,4,2,0]},
+  contest:{bpm:138,sw:.5,base:57,ch:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]],bass:[0,-4,3,-2]}};
+ const PH={day:[[7,-1,9,7,4,-1,2,4],[7,9,12,9,7,4,2,-1],[4,7,9,-1,7,4,2,0],[2,4,7,4,2,0,-3,0]],
+  eve:[[12,-1,9,-1,7,9,-1,-1],[7,-1,4,5,7,-1,-1,-1],[9,7,5,4,2,-1,0,-1],[4,-1,2,0,-1,-1,-1,-1]],
+  contest:[[12,12,10,7,10,12,15,12],[7,7,5,3,5,7,10,7],[12,15,12,10,7,10,12,-1],[3,5,7,10,12,10,7,5]]};
+ const bar=()=>{const m=MUS.mode,c=S[m]||S.day,ph=PH[m]||PH.day,b=MUS.step%4,sec=Math.floor(MUS.step/4)%4,e=60/c.bpm/2,t0=MUS.next;
+  const tAt=k=>t0+k*e+(k%2?(c.sw-.5)*2*e:0),ch=c.ch[b],R=c.base+c.bass[b];
+  for(let k=0;k<8;k++){const t=tAt(k);
+   if(m==='contest'){if(k%2===0)kick(t,.45);if(k===2||k===6)snare(t,.15);hat(t,.04)}
+   else if(m==='eve'){if(k===0||k===5)kick(t,.3);if(k===4)noise(t,.25,.06,1200);if(k%2)hat(t,.02)}
+   else{if(k===0||k===3||k===4)kick(t,k===3?.25:.42);if(k===2||k===6)snare(t,.13);hat(t,k%2?.035:.02)}
+   const bn=k===0?R-12:k===3?R:k===4?R-12:k===6?R-5:null;if(bn!==null)osc(mtof(bn),t,e*1.6,'triangle',.16,.01);
+   if(m==='eve'){if(k===0)ch.forEach((n,x)=>{osc(mtof(c.base+n),t,e*7.5,'sawtooth',.018,.25,-6);osc(mtof(c.base+n),t,e*7.5,'sawtooth',.018,.25,7)})}
+   else if(k%2===1||(m==='contest'&&k%4===0))ch.forEach(n=>osc(mtof(c.base+12+n),t,e*.7,'triangle',.028,.004));
+   const ml=sec===3&&b>1?-1:ph[(b+sec)%ph.length][k];if(ml>=0){const f=mtof(c.base+12+ml);
+    if(m==='day'&&(b+k)%5===0)osc(f*1.06,t,e*1.4,'sine',.07,.003,0,.944);else osc(f,t,e*(m==='eve'?1.8:.95),m==='contest'?'square':'triangle',m==='contest'?.035:.065,.004)}}
+  MUS.next=t0+8*e;MUS.step++};
+ const sched=()=>{if(!MUSIC)return stopMusic();while(MUS.next<a.currentTime+.35)bar()};sched();MUS.timer=setInterval(sched,120);MUS.on=true}
+function stopMusic(){clearInterval(MUS.timer);clearTimeout(MUS.timer);MUS.timer=null;MUS.on=false}
 function setMusic(mode){if(MUS.mode!==mode){MUS.mode=mode}if(MUSIC&&!MUS.timer)startMusic(mode)}
 /* ---------- layout ---------- */
 function fit(){const de=document.documentElement,vv=window.visualViewport;const W=(vv&&vv.width)||de.clientWidth||innerWidth,H=(vv&&vv.height)||de.clientHeight||innerHeight;SC=Math.min(W/1600,H/900);stage.style.transform=`translate(${(W-1600*SC)/2}px,${(H-900*SC)/2}px) scale(${SC})`;$('rot').style.display=(H>W&&W<760&&!window._rotOk)?'flex':'none'}

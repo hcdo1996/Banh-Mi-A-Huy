@@ -24,6 +24,6 @@ Game web tĩnh (không build). Mở `index.html` là chạy. Deploy: GitHub Page
 - `bot.py <day> 1600 900` — bot Playwright tự chơi 1 ngày, in kết quả + lỗi JS (cần `python3 -m http.server 8765`).
 
 ## Việc còn dở
-- Thay nhạc nền (đang là WebAudio tự tạo trong `startMusic`) bằng file nhạc thật.
-- Thu lại vài câu khách hơi ngọng: be_ti_4, anh_son_3, ong_thanh_3/4, van_4, co_hanh_2.
+- Nhạc nền: đang là nhạc WebAudio tự tạo trong `startMusic` (trống, bass, hợp âm, giai điệu ngũ cung; 3 chế độ day/eve/contest). Có thể thay bằng file nhạc thật.
+- Thu lại vài câu khách hơi ngọng: be_ti_4, anh_son_3, ong_thanh_3/4, van_4 (giọng và câu thoại nằm trong `tools/voices.json`).
 - Phần lớn thoại VN của Na/A Huy/Má chưa có giọng (chỉ các câu chính).
