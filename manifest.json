@@ -1,0 +1,14 @@
+{
+  "name": "Bánh Mì A Huy",
+  "short_name": "Bánh Mì A Huy",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#3b2414",
+  "theme_color": "#c8361f",
+  "icons": [
+    {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

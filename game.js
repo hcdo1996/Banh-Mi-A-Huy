@@ -531,3 +531,9 @@ window.__G={get S(){return S},SV:()=>SV,startDay,step,serve:()=>serve(),endDay,V
  const upd=()=>{const p=Math.round(n*100/Math.max(tot,1));if(el('lfill'))el('lfill').style.width=p+'%';if(el('lpct'))el('lpct').textContent=p+'%'};
  const tt=setInterval(()=>{if(el('ltip'))el('ltip').textContent=say_(tips[t++%tips.length])},1600);
  if(!tot)return fin();list.forEach(f=>{const im=new Image();im.onload=im.onerror=()=>{n++;upd();if(n>=tot)setTimeout(fin,250)};im.src='assets/'+f});setTimeout(fin,15000)})();
+
+/* ---------- iOS Safari: stop page from panning/zooming while dragging ---------- */
+(function(){const block=e=>{if(e.target.closest&&e.target.closest('#panel .box'))return;e.preventDefault()};
+ document.addEventListener('touchmove',block,{passive:false});
+ ['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+ window.addEventListener('scroll',()=>{if(window.scrollX||window.scrollY)window.scrollTo(0,0)},{passive:true});})();
