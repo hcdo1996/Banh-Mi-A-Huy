@@ -58,7 +58,7 @@ async def main():
         await drag((bb[0]-bb[2]*.45,bb[1]),(bb[0]+bb[2]*.45,bb[1]),steps=18);await pg.wait_for_timeout(350)
       elif s in('butter','pate'):
         if (s=='butter' and o['noButter']) or (s=='pate' and o['noPate']):
-          await pg.click('#skipBtn');await pg.wait_for_timeout(300);continue
+          await pg.click('#skipBtn',force=True);await pg.wait_for_timeout(300);continue
         bw=await box('#butterBowl' if s=='butter' else '#pateBowl');await pg.mouse.click(bw[0],bw[1]);await pg.wait_for_timeout(120)
         await pg.mouse.move(bb[0]-bb[2]*.3,bb[1]);await pg.mouse.down()
         for _ in range(8):
