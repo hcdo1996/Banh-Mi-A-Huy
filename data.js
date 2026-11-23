@@ -78,14 +78,14 @@ const DITEM={phin:L('Phin','Phin'),kettle:L('Ấm nước','Kettle'),milk:L('S�
 
 /* ---------- upgrades ---------- */
 const UPGRADES={
- knife:{n:L('Dao bén','Sharp knife'),d:L('Xẻ bánh chỉ cần kéo nửa ổ','Slice with half a drag'),price:30000,icon:'🔪'},
- rattle:{n:L('Lục lạc của Chloe','Chloe\'s rattle'),d:L('Chloe nín nhanh hơn','Chloe calms down faster'),price:30000,icon:'🔔'},
- bone:{n:L('Hũ xương cho Kẹo','Bone jar for Kẹo'),d:L('Kẹo ghé chào, không trộm','Kẹo visits, no stealing'),price:25000,icon:'🦴'},
- spread:{n:L('Phết đều tay','Steady spreading'),d:L('Phết bơ, pa-tê nhanh gấp rưỡi','Spread 1.5× faster'),price:40000,icon:'🧈'},
- fan:{n:L('Quạt máy','Electric fan'),d:L('Khách kiên nhẫn lâu hơn 15%','Customers 15% more patient'),price:50000,icon:'🌀'},
- speaker:{n:L('Loa bolero','Bolero speaker'),d:L('Tiền tip +20%','Tips +20%'),price:60000,icon:'🔊'},
- pour:{n:L('Bình rót có vạch','Measuring jug'),d:L('Vạch rót rộng hơn','Wider pour zone'),price:45000,icon:'<img src="assets/d_kettle.webp" alt="" style="height:1em">'},
- led:{n:L('Bảng hiệu đèn LED','LED sign'),d:L('Tip cao hơn, khách vui hơn','Bigger tips, happier customers'),price:80000,icon:'💡'},
+ knife:{n:L('Dao bén','Sharp knife'),d:L('Xẻ bánh chỉ cần kéo nửa ổ','Slice with half a drag'),price:120000,icon:'🔪'},
+ rattle:{n:L('Lục lạc của Chloe','Chloe\'s rattle'),d:L('Chloe nín nhanh hơn','Chloe calms down faster'),price:100000,icon:'🔔'},
+ bone:{n:L('Hũ xương cho Kẹo','Bone jar for Kẹo'),d:L('Kẹo ghé chào, không trộm','Kẹo visits, no stealing'),price:90000,icon:'🦴'},
+ spread:{n:L('Phết đều tay','Steady spreading'),d:L('Phết bơ, pa-tê nhanh gấp rưỡi','Spread 1.5× faster'),price:150000,icon:'🧈'},
+ fan:{n:L('Quạt máy','Electric fan'),d:L('Khách kiên nhẫn lâu hơn 15%','Customers 15% more patient'),price:200000,icon:'🌀'},
+ speaker:{n:L('Loa bolero','Bolero speaker'),d:L('Tiền tip +20%','Tips +20%'),price:230000,icon:'🔊'},
+ pour:{n:L('Bình rót có vạch','Measuring jug'),d:L('Vạch rót rộng hơn','Wider pour zone'),price:180000,icon:'<img src="assets/d_kettle.webp" alt="" style="height:1em">'},
+ led:{n:L('Bảng hiệu đèn LED','LED sign'),d:L('Tip cao hơn, khách vui hơn','Bigger tips, happier customers'),price:300000,icon:'💡'},
 };
 
 /* ---------- days ---------- */
