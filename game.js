@@ -259,7 +259,7 @@ const STEP_UI={slice:'slice',butter:'butter',pate:'pate',fill:'fill',sauce:'sauc
 function step(s){ghostStop();S.step=s;S.prog=0;S.armed=false;dayTimeout(tutGhost,450);if(STEP_UI[s])banner(UI[STEP_UI[s]]);setPose(s==='slice'?'bread_knife':'open');setCarry(null);$('skipBtn').style.display='none';
  const o=S.cur.order;
  if(s==='slice'||s==='wrap'||s==='give')hint([$('breadBox')].concat(s==='give'&&o.drink?[$('cupBox')]:[]));
- if(s==='butter'||s==='pate'){hint([$(s==='butter'?'butterBowl':'pateBowl')]);if(S.day>=5){const b=$('skipBtn');b.textContent=say_(s==='butter'?UI.noButter:UI.noPate);b.style.display='block'}}
+ if(s==='butter'||s==='pate'){const o=S.cur&&S.cur.order,skip=o&&(s==='butter'?o.noButter:o.noPate),b=$('skipBtn');if(skip||S.day>=5){b.textContent=say_(s==='butter'?UI.noButter:UI.noPate);b.style.display='block'}b.classList.toggle('pulse',!!skip);hint([skip?b:$(s==='butter'?'butterBowl':'pateBowl')]);if(skip)banner(L('Khách không ăn '+(s==='butter'?'bơ':'pa-tê')+' → bấm nút "Không '+(s==='butter'?'bơ':'pa-tê')+'" để bỏ qua','No '+(s==='butter'?'butter':'pâté')+' → tap the skip button'))}
  if(s==='fill'){hintTrays();if(S.dogArm>0)S.dogWatch=true}
  if(s==='sauce')hint([$('b_'+o.sauce)]);
  if(s==='drink')startDrink()}
